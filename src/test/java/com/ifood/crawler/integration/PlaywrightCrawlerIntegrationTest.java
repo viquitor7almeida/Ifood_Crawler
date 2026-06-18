@@ -1,4 +1,4 @@
-package test.java.com.ifood.crawler.integration;
+package com.ifood.crawler.integration;
 
 import com.ifood.crawler.adapter.config.AppConfig;
 import com.ifood.crawler.adapter.output.PlaywrightCrawler;
@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class PlaywrightCrawlerIntegrationTest {
 
@@ -39,19 +40,16 @@ class PlaywrightCrawlerIntegrationTest {
     }
 
     @Test
-    void shouldReturnEmptyForInvalidUrl() {
-        // Deve lançar exceção que será tratada pelo retry
-        assertThat(Exception.class).isThrownBy(() -> 
+    void shouldThrowExceptionForInvalidUrl() {
+        assertThatThrownBy(() -> 
             crawler.fetchPage("https://www.ifood.com.br/pagina-inexistente-123456789")
-        );
+        ).isInstanceOf(Exception.class);
     }
 
     @Test
     void shouldHandleTimeout() {
-        // Testa comportamento com timeout (URL que demora muito)
-        // Não temos controle, então apenas verificamos que não crasha
-        assertThat(Exception.class).isThrownBy(() -> 
+        assertThatThrownBy(() -> 
             crawler.fetchPage("https://www.google.com")
-        ); // Na verdade, não deve lançar exceção, mas se lançar, é tratado
+        ).isInstanceOf(Exception.class);
     }
 }

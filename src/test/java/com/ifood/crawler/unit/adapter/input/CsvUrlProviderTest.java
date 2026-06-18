@@ -1,4 +1,4 @@
-package test.java.com.ifood.crawler.unit.adapter.input;
+package com.ifood.crawler.unit.adapter.input;
 
 import com.ifood.crawler.adapter.input.CsvUrlProvider;
 import org.junit.jupiter.api.Test;

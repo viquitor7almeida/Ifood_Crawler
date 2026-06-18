@@ -1,4 +1,4 @@
-package main.java.com.ifood.crawler.adapter.config;
+package com.ifood.crawler.adapter.config;
 
 import java.io.IOException;
 import java.io.InputStream;

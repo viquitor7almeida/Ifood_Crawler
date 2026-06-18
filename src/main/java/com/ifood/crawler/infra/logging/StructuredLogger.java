@@ -1,16 +1,13 @@
-package main.java.com.ifood.crawler.infra.logging;
+package com.ifood.crawler.infra.logging;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Wrapper para logging estruturado com MDC.
- * Permite adicionar campos contextuais a cada log.
- */
 public class StructuredLogger {
 
     private final Logger logger;
@@ -31,16 +28,13 @@ public class StructuredLogger {
     }
 
     public void info(String message, Object... args) {
-        try (var ctx = new MDCContext(Map.of(
-                "correlationId", correlationId,
-                "level", "INFO"
-        ))) {
+        try (var ctx = new MDCContext(Map.of("correlationId", correlationId))) {
             logger.info(message, args);
         }
     }
 
     public void infoWithContext(String message, Map<String, Object> context, Object... args) {
-        var allContext = new java.util.HashMap<>(context);
+        var allContext = new HashMap<>(context);
         allContext.put("correlationId", correlationId);
         try (var ctx = new MDCContext(allContext)) {
             logger.info(message, args);
@@ -48,47 +42,48 @@ public class StructuredLogger {
     }
 
     public void warn(String message, Object... args) {
-        try (var ctx = new MDCContext(Map.of(
-                "correlationId", correlationId,
-                "level", "WARN"
-        ))) {
+        try (var ctx = new MDCContext(Map.of("correlationId", correlationId))) {
             logger.warn(message, args);
         }
     }
 
     public void warn(String message, Throwable t, Object... args) {
-        try (var ctx = new MDCContext(Map.of(
-                "correlationId", correlationId,
-                "level", "WARN"
-        ))) {
+        try (var ctx = new MDCContext(Map.of("correlationId", correlationId))) {
             logger.warn(message, args, t);
         }
     }
 
+    public void warnWithContext(String message, Map<String, Object> context, Object... args) {
+        var allContext = new HashMap<>(context);
+        allContext.put("correlationId", correlationId);
+        try (var ctx = new MDCContext(allContext)) {
+            logger.warn(message, args);
+        }
+    }
+
     public void error(String message, Object... args) {
-        try (var ctx = new MDCContext(Map.of(
-                "correlationId", correlationId,
-                "level", "ERROR"
-        ))) {
+        try (var ctx = new MDCContext(Map.of("correlationId", correlationId))) {
             logger.error(message, args);
         }
     }
 
     public void error(String message, Throwable t, Object... args) {
-        try (var ctx = new MDCContext(Map.of(
-                "correlationId", correlationId,
-                "level", "ERROR"
-        ))) {
+        try (var ctx = new MDCContext(Map.of("correlationId", correlationId))) {
             logger.error(message, args, t);
+        }
+    }
+
+    public void errorWithContext(String message, Map<String, Object> context, Object... args) {
+        var allContext = new HashMap<>(context);
+        allContext.put("correlationId", correlationId);
+        try (var ctx = new MDCContext(allContext)) {
+            logger.error(message, args);
         }
     }
 
     public void debug(String message, Object... args) {
         if (logger.isDebugEnabled()) {
-            try (var ctx = new MDCContext(Map.of(
-                    "correlationId", correlationId,
-                    "level", "DEBUG"
-            ))) {
+            try (var ctx = new MDCContext(Map.of("correlationId", correlationId))) {
                 logger.debug(message, args);
             }
         }
@@ -98,10 +93,10 @@ public class StructuredLogger {
         return correlationId;
     }
 
-    // AutoCloseable para limpar MDC após cada log
     private static class MDCContext implements AutoCloseable {
         private final Map<String, String> previousContext;
 
+        @SuppressWarnings("unchecked")
         public MDCContext(Map<String, Object> context) {
             this.previousContext = MDC.getCopyOfContextMap();
             context.forEach((key, value) -> MDC.put(key, String.valueOf(value)));

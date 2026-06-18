@@ -1,4 +1,4 @@
-package test.java.com.ifood.crawler.integration;
+package com.ifood.crawler.integration;
 
 import com.ifood.crawler.adapter.config.AppConfig;
 import com.ifood.crawler.adapter.output.SqlitePersistence;

@@ -1,4 +1,4 @@
-package main.java.com.ifood.crawler.adapter.input;
+package com.ifood.crawler.adapter.input;
 
 import com.ifood.crawler.core.port.input.UrlProvider;
 

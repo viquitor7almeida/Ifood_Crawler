@@ -1,4 +1,4 @@
-package test.java.com.ifood.crawler.unit.adapter.output;
+package com.ifood.crawler.unit.adapter.output;
 
 import com.ifood.crawler.adapter.output.ResilientParser;
 import com.ifood.crawler.core.model.ProductData;

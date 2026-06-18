@@ -1,4 +1,4 @@
-package test.java.com.ifood.crawler.unit.core.model;
+package com.ifood.crawler.unit.core.model;
 
 import com.ifood.crawler.core.model.CrawlStatus;
 import com.ifood.crawler.core.model.ProductData;

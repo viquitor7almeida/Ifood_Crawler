@@ -1,4 +1,4 @@
-package main.java.com.ifood.crawler.core.service;
+package com.ifood.crawler.core.service;
 
 import java.time.Duration;
 import java.time.Instant;

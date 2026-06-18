@@ -1,4 +1,4 @@
-package test.java.com.ifood.crawler.unit.core.service;
+package com.ifood.crawler.unit.core.service;
 
 import com.ifood.crawler.core.service.RetryPolicy;
 import org.junit.jupiter.api.Test;
