@@ -1,35 +1,35 @@
 #!/bin/bash
-# Script helper para executar o crawler com Docker
+#script helper para executar o crawler com docker
 
 set -e
 
-# Cores para output
+#cores para output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+NC='\033[0m' #no Color
 
 echo -e "${GREEN}========================================${NC}"
 echo -e "${GREEN}  iFood Crawler - Docker Runner${NC}"
 echo -e "${GREEN}========================================${NC}"
 
-# Verificar se o Docker está instalado
+#verificar se o Docker esta instalado
 if ! command -v docker &> /dev/null; then
     echo -e "${RED}ERRO: Docker não encontrado. Instale o Docker primeiro.${NC}"
     exit 1
 fi
 
-# Verificar se o Docker Compose está disponível
+#verificar se o Docker Compose esta disponível
 if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
     echo -e "${RED}ERRO: Docker Compose não encontrado.${NC}"
     exit 1
 fi
 
-# Criar diretórios necessários
+#criar diretorios necessarios
 echo -e "${YELLOW}Criando diretórios...${NC}"
 mkdir -p data/urls data/output data/checkpoints data/logs
 
-# Verificar se o arquivo de URLs existe
+#verificar se o arquivo de URLs existe
 if [ ! -f "data/urls/ifood_urls.csv" ]; then
     echo -e "${YELLOW}ATENÇÃO: Arquivo de URLs não encontrado em data/urls/ifood_urls.csv${NC}"
     echo -e "${YELLOW}Por favor, coloque o arquivo CSV com as URLs em: data/urls/ifood_urls.csv${NC}"
@@ -43,7 +43,7 @@ if [ ! -f "data/urls/ifood_urls.csv" ]; then
     fi
 fi
 
-# Escolher modo de execução
+#escolher modo de execuçao
 echo -e "${YELLOW}Escolha o modo de execução:${NC}"
 echo "1) Build + Run (com Docker Compose)"
 echo "2) Run apenas (usar imagem existente)"
@@ -76,14 +76,14 @@ case $mode in
         ;;
 esac
 
-# Mostrar resultados
+#mostrar resultados
 if [ -f "data/output/results.json" ]; then
     echo -e "${GREEN}========================================${NC}"
     echo -e "${GREEN}  Crawler finalizado com sucesso!${NC}"
     echo -e "${GREEN}========================================${NC}"
     echo -e "Resultados disponíveis em: ${YELLOW}data/output/results.json${NC}"
     
-    # Mostrar resumo
+    #mostrar resumo
     echo -e "\n${YELLOW}Resumo da execução:${NC}"
     if command -v jq &> /dev/null; then
         TOTAL=$(jq '. | length' data/output/results.json 2>/dev/null || echo "?")

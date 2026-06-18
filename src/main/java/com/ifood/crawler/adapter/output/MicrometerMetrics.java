@@ -1,4 +1,4 @@
-package main.java.com.ifood.crawler.adapter.output;
+package com.ifood.crawler.adapter.output;
 
 import com.ifood.crawler.core.port.output.MetricsPort;
 import io.micrometer.core.instrument.MeterRegistry;

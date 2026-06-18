@@ -1,0 +1,14 @@
+[ {
+  "url" : "https://www.ifood.com.br/delivery/sao-paulo-sp/droga-raia---vila-olimpia---b---403-vl-olimpia/58203d97-5c99-4d2c-b2ff-c2adac85c72a?item=3f49b48f-cfaa-45dd-ad1d-55f1e155e92b",
+  "productData" : {
+    "title" : "www.ifood.com.br",
+    "normalPrice" : null,
+    "discountPrice" : null,
+    "productUrl" : "https://www.ifood.com.br/delivery/sao-paulo-sp/droga-raia---vila-olimpia---b---403-vl-olimpia/58203d97-5c99-4d2c-b2ff-c2adac85c72a?item=3f49b48f-cfaa-45dd-ad1d-55f1e155e92b",
+    "imageUrl" : null,
+    "status" : "SUCCESS",
+    "errorMessage" : null
+  },
+  "attemptCount" : 1,
+  "durationMillis" : 20455,
+  "timestamp"

@@ -1,4 +1,4 @@
-package main.java.com.ifood.crawler.adapter.input;
+package com.ifood.crawler.adapter.input;
 
 import com.ifood.crawler.core.port.input.UrlProvider;
 
@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 /**
  *le urls de um arquivo CSV. Supõe:
  *sem cabecalho, primeira coluna = URL.
- *ou se houver cabeçalho, coluna chamada "url"
+ *ou se houver cabecalho, coluna chamada "url"
  */
 public class CsvUrlProvider implements UrlProvider {
 
@@ -26,7 +26,7 @@ public class CsvUrlProvider implements UrlProvider {
     public Stream<String> urls() {
         try {
             BufferedReader reader = Files.newBufferedReader(csvPath);
-            //detecta cabeçalho
+            //detecta cabecalho
             String firstLine = reader.readLine();
             if (firstLine == null) return Stream.empty();
 
@@ -43,15 +43,13 @@ public class CsvUrlProvider implements UrlProvider {
                 }
             } else {
                 //reprocessar a primeira linha como dado
-                //precisamos recolocar a linha no stream, então e mais facil ler tudo com um iterador.
-                //para simplicidade, fechamos e reabrimos.
                 reader.close();
                 return Files.lines(csvPath)
                         .map(line -> line.split(",")[0].trim())
                         .filter(url -> !url.isBlank());
             }
 
-            //se tem cabeçalho le as proximas linhas
+            //se tem cabecalho le as proximas linhas
             final int finalIndex = urlColumnIndex;
             return reader.lines()
                     .map(line -> line.split(",")[finalIndex].trim())
@@ -70,7 +68,7 @@ public class CsvUrlProvider implements UrlProvider {
         if (totalLines == -1) {
             try (Stream<String> stream = Files.lines(csvPath)) {
                 totalLines = stream.count();
-                // Se tiver cabeçalho, subtrai 1
+                //se tiver cabecalho, subtrai 1
                 try (BufferedReader reader = Files.newBufferedReader(csvPath)) {
                     String first = reader.readLine();
                     if (first != null && first.toLowerCase().contains("url")) totalLines--;

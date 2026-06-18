@@ -1,4 +1,4 @@
-package main.java.com.ifood.crawler.core.service;
+package com.ifood.crawler.core.service;
 
 import com.ifood.crawler.core.model.CrawlResult;
 import com.ifood.crawler.core.model.ExecutionSummary;
@@ -6,7 +6,7 @@ import com.ifood.crawler.core.model.ProductData;
 import com.ifood.crawler.core.port.input.CrawlerOrchestrator;
 import com.ifood.crawler.core.port.input.UrlProvider;
 import com.ifood.crawler.core.port.output.*;
-import com.ifood.crawler.infra.health.HealthCheck;
+import com.ifood.crawler.infra.HealthCheck;
 import com.ifood.crawler.infra.logging.StructuredLogger;
 import com.microsoft.playwright.Page;
 

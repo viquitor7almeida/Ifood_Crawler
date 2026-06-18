@@ -25,6 +25,8 @@ RUN apk add --no-cache \
     nss \
     freetype \
     harfbuzz \
+    nodejs \
+    npm \
     ca-certificates \
     ttf-freefont \
     fontconfig \
@@ -43,8 +45,7 @@ RUN mkdir -p /app/urls /app/output /app/logs /app/checkpoints && \
     chown -R appuser:appgroup /app
 
 #copiar JAR do estágio de build
-COPY --from=builder /app/target/*.jar /app/ifood-crawler.jar
-
+COPY --from=builder /app/target/ifood-crawler-1.0.0.jar /app/ifood-crawler.jar
 # copiar arquivos de configuraçao
 COPY src/main/resources/application.properties /app/config/application.properties
 COPY src/main/resources/logback.xml /app/config/logback.xml
