@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  ifood-crawler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ifood-crawler
+    hostname: crawler
+    restart: unless-stopped
+    
+    # Configurações de recursos
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    
+    # Variáveis de ambiente (sobrescrevem application.properties)
+    environment:
+      - CRAWLER_PARALLELISM=5
+      - CRAWLER_MAX_RETRIES=3
+      - CRAWLER_INITIAL_BACKOFF_MS=1000
+      - CRAWLER_RATE_LIMIT_DELAY_MS=1000
+      - CRAWLER_CHECKPOINT_INTERVAL=10
+      - CRAWLER_INPUT_FILE=/app/urls/ifood_urls.csv
+      - CRAWLER_OUTPUT_FILE=/app/output/results.json
+      - CRAWLER_CHECKPOINT_DB_PATH=/app/checkpoints/checkpoint.db
+      - JAVA_OPTS=-Xmx1G -Xms256M
+    
+    # Volumes para dados persistentes
+    volumes:
+      # Montar arquivo de entrada (CSV com URLs)
+      - ./data/urls:/app/urls:ro
+      # Montar diretório de saída (resultados)
+      - ./data/output:/app/output
+      # Montar diretório de checkpoints (persistente)
+      - ./data/checkpoints:/app/checkpoints
+      # Montar logs (opcional)
+      - ./data/logs:/app/logs
+    
+    # Health check (opcional - verifica se o crawler está rodando)
+    healthcheck:
+      test: ["CMD", "test", "-f", "/app/checkpoints/crawler.health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    # Rede (opcional - para isolamento)
+    networks:
+      - crawler-network
+
+networks:
+  crawler-network:
+    driver: bridge
+
+# Volumes nomeados (opcional)
+volumes:
+  urls-data:
+    driver: local
+  output-data:
+    driver: local
+  checkpoint-data:
+    driver: local

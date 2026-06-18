@@ -1,0 +1,50 @@
+#arquivos de build
+target/
+*.jar
+*.war
+*.ear
+
+#arquivos de configuracao local
+*.log
+*.db
+*.db.backup
+*.tmp
+
+#diretorios de dados
+data/
+output/
+logs/
+checkpoints/
+checkpoint.db*
+results*
+
+#arquivos de IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+#arquivos de sistema
+.DS_Store
+Thumbs.db
+
+#arquivos de versionamento
+.git/
+.gitignore
+.gitattributes
+
+#documentacao
+*.md
+docs/
+
+#arquivos temporarios
+*.tmp
+*.swp
+*.swo
+
+#arquivos de ambiente
+.env
+.env.local
+.env.*.local
