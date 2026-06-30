@@ -1,7 +1,7 @@
 # iFood Product Crawler
 
 [![Java](https://img.shields.io/badge/Java-17-blue.svg)](https://adoptium.net/)
-[![Playwright](https://img.shields.io/badge/Playwright-1.40.0-green.svg)](https://playwright.dev/java/)
+
 [![Docker](https://img.shields.io/badge/Docker-24.0-blue.svg)](https://www.docker.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -35,8 +35,8 @@ O **iFood Product Crawler** é uma aplicação backend desenvolvida para coletar
 
 - **Processamento concorrente** de até 1.000 URLs com pool de workers configurável
 - **Taxa de sucesso garantida ≥ 95%** com retry exponencial, rate limiting e checkpoint
-- **Renderização dinâmica** via Playwright para páginas com JavaScript (React/SPA)
-- **Parser resiliente** com múltiplos seletores e fallback com JSoup
+- **Parser resiliente** com JSON-LD, data-testid, meta tags, __NEXT_DATA__ e fallback CSS
+- **Proxy Cloudflare** via Flaresolverr com circuit breaker
 - **Checkpoint automático** com SQLite para retomada de execução interrompida
 - **Logging estruturado** com correlation ID para rastreabilidade
 - **Métricas detalhadas** com percentis de latência e contadores
@@ -48,7 +48,7 @@ O **iFood Product Crawler** é uma aplicação backend desenvolvida para coletar
 | Tecnologia | Versão | Propósito |
 |------------|--------|-----------|
 | Java | 17 | Linguagem principal |
-| Playwright | 1.40.0 | Navegação headless e renderização JS |
+| Flaresolverr | latest | Bypass Cloudflare e renderização JS |
 | JSoup | 1.17.2 | Parsing HTML fallback |
 | SQLite | 3.44.1 | Checkpoint e persistência local |
 | Jackson | 2.16.1 | Serialização JSON |
@@ -66,7 +66,7 @@ O **iFood Product Crawler** é uma aplicação backend desenvolvida para coletar
 
 - **Java 17** (JDK 17+)
 - **Maven 3.9+**
-- **Playwright** (instalado automaticamente na primeira execução)
+- **Flaresolverr** rodando em http://localhost:8191
 - **Arquivo CSV** com as URLs a serem processadas
 
 ### Para execução com Docker

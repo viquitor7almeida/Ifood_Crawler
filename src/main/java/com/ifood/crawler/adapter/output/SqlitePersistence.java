@@ -2,6 +2,7 @@ package com.ifood.crawler.adapter.output;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ifood.crawler.adapter.config.AppConfig;
 import com.ifood.crawler.core.model.CrawlResult;
 import com.ifood.crawler.core.model.ProductData;
@@ -16,8 +17,6 @@ import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,13 +31,21 @@ public class SqlitePersistence implements PersistencePort {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     private final Path dbPath;
+    private final Path outputPath;
     private final ObjectMapper objectMapper = new ObjectMapper()
-            .enable(SerializationFeature.INDENT_OUTPUT);
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .registerModule(new JavaTimeModule());
 
     public SqlitePersistence(AppConfig config) {
-        this.dbPath = config.getCheckpointDbPath();
+        this.dbPath = config.getCheckpointDbPath().toAbsolutePath();
+        this.outputPath = config.getOutputFile().toAbsolutePath();
+        Path parent = dbPath.getParent();
+        if (parent != null) {
+            try { Files.createDirectories(parent); } catch (IOException e) {
+                log.warn("Nao foi possivel criar diretorio do banco: {}", parent);
+            }
+        }
         createTableIfNotExists();
-        // Cria backup inicial se não existir
         backupDatabase();
     }
 
@@ -260,22 +267,21 @@ public class SqlitePersistence implements PersistencePort {
      * Exporta resultados para JSON.
      */
     private void exportToJson(List<CrawlResult> results) {
-        Path jsonPath = Path.of("output/results.json");
+        Path jsonPath = outputPath;
         try {
-            Files.createDirectories(jsonPath.getParent());
+            Path parent = jsonPath.getParent();
+            if (parent != null) Files.createDirectories(parent);
             objectMapper.writeValue(jsonPath.toFile(), results);
             log.info("Resultados exportados para JSON: {}", jsonPath);
         } catch (Exception e) {
             log.error("Falha ao exportar JSON", e);
-            throw new RuntimeException("Falha ao exportar JSON", e);
+            throw new RuntimeException("Falha ao exportar JSON para " + jsonPath, e);
         }
     }
 
-    /**
-     * Exporta resultados para CSV (diferencial).
-     */
     private void exportToCsv(List<CrawlResult> results) {
-        Path csvPath = Path.of("output/results.csv");
+        String csvName = outputPath.getFileName().toString().replace(".json", ".csv");
+        Path csvPath = outputPath.resolveSibling(csvName);
         try {
             Files.createDirectories(csvPath.getParent());
             

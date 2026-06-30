@@ -92,6 +92,14 @@ public class RetryPolicy {
         }
 
         public RetryPolicy build() {
+            if (maxRetries < 1) throw new IllegalArgumentException("maxRetries deve ser >= 1");
+            if (initialBackoff.isNegative() || initialBackoff.isZero()) {
+                throw new IllegalArgumentException("initialBackoff deve ser positivo");
+            }
+            if (multiplier <= 1.0) throw new IllegalArgumentException("multiplier deve ser > 1.0");
+            if (maxBackoff.toMillis() < initialBackoff.toMillis()) {
+                throw new IllegalArgumentException("maxBackoff deve ser >= initialBackoff");
+            }
             return new RetryPolicy(this);
         }
     }
