@@ -1,0 +1,27 @@
+# Build
+target/
+dependency-reduced-pom.xml
+*.jar
+*.war
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+
+# Maven generated
+META-INF/
+
+# Runtime data
+checkpoint.db*
+checkpoints/
+cookies/
+output/
+logs/
+data/test_*.csv
+
+# OS
+.DS_Store
+Thumbs.db
