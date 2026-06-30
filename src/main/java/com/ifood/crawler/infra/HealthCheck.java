@@ -18,7 +18,8 @@ public class HealthCheck {
 
     public void update() {
         try {
-            Files.createDirectories(healthFile.getParent());
+            Path parent = healthFile.toAbsolutePath().getParent();
+            if (parent != null) Files.createDirectories(parent);
             long success = metricsPort.getSuccessCount();
             long error = metricsPort.getErrorCount();
             long total = success + error;

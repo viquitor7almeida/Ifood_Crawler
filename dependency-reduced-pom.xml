@@ -30,6 +30,7 @@
                 <transformer>
                   <mainClass>com.ifood.crawler.IfoodCrawlerApplication</mainClass>
                 </transformer>
+                <transformer />
               </transformers>
             </configuration>
           </execution>
@@ -183,7 +184,6 @@
     <maven.compiler.source>17</maven.compiler.source>
     <jsoup.version>1.17.2</jsoup.version>
     <mockito.version>5.7.0</mockito.version>
-    <playwright.version>1.40.0</playwright.version>
     <maven.compiler.target>17</maven.compiler.target>
     <testcontainers.version>1.19.3</testcontainers.version>
     <logstash.version>7.4</logstash.version>

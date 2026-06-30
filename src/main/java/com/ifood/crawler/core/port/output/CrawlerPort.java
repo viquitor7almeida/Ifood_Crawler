@@ -1,9 +1,10 @@
 package com.ifood.crawler.core.port.output;
 
-import com.microsoft.playwright.Page;
+import com.ifood.crawler.core.model.FetchedPage;
 import java.util.Optional;
 
 public interface CrawlerPort {
-    Optional<Page> fetchPage(String url) throws Exception;
+    String name();
+    Optional<FetchedPage> fetchPage(String url);
     void close();
 }

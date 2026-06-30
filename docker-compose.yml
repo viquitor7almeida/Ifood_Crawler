@@ -1,13 +1,31 @@
 services:
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    hostname: flaresolverr
+    restart: unless-stopped
+    shm_size: 2gb
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+    environment:
+      - LOG_LEVEL=info
+      - CAPTCHA_SOLVER=none
+    networks:
+      - crawler-network
+
   ifood-crawler:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: ifood-crawler
     hostname: crawler
-    restart: unless-stopped
-    
-    # Configurações de recursos
+    restart: "no"
+    depends_on:
+      - flaresolverr
+
+    shm_size: 256mb
     deploy:
       resources:
         limits:
@@ -16,51 +34,35 @@ services:
         reservations:
           cpus: '0.5'
           memory: 512M
-    
-    # Variáveis de ambiente (sobrescrevem application.properties)
+
     environment:
       - CRAWLER_PARALLELISM=5
       - CRAWLER_MAX_RETRIES=3
-      - CRAWLER_INITIAL_BACKOFF_MS=1000
-      - CRAWLER_RATE_LIMIT_DELAY_MS=1000
-      - CRAWLER_CHECKPOINT_INTERVAL=10
-      - CRAWLER_INPUT_FILE=/app/urls/ifood_urls.csv
+      - CRAWLER_INITIAL_BACKOFF_MS=500
+      - CRAWLER_BACKOFF_MULTIPLIER=2.0
+      - CRAWLER_MAX_BACKOFF_MS=15000
+      - CRAWLER_RATE_LIMIT_DELAY_MS=500
+      - CRAWLER_CHECKPOINT_INTERVAL=25
+      - CRAWLER_NAVIGATION_TIMEOUT=45
+      - CRAWLER_FLARESOLVERR_URL=http://flaresolverr:8191/v1
+      - CRAWLER_FLARESOLVERR_TIMEOUT=120
+      - CRAWLER_FLARESOLVERR_SESSION_TTL=3600
+      - CRAWLER_INPUT_FILE=/app/data/ifood_urls_padrao_item_1000.csv
       - CRAWLER_OUTPUT_FILE=/app/output/results.json
       - CRAWLER_CHECKPOINT_DB_PATH=/app/checkpoints/checkpoint.db
-      - JAVA_OPTS=-Xmx1G -Xms256M
-    
-    # Volumes para dados persistentes
+      - CRAWLER_COOKIE_STORE_PATH=/app/cookies/cookies.json
+      - JAVA_OPTS=-Xmx1G -Xms256M -Djava.io.tmpdir=/tmp
+
     volumes:
-      # Montar arquivo de entrada (CSV com URLs)
-      - ./data/urls:/app/urls:ro
-      # Montar diretório de saída (resultados)
-      - ./data/output:/app/output
-      # Montar diretório de checkpoints (persistente)
-      - ./data/checkpoints:/app/checkpoints
-      # Montar logs (opcional)
-      - ./data/logs:/app/logs
-    
-    # Health check (opcional - verifica se o crawler está rodando)
-    healthcheck:
-      test: ["CMD", "test", "-f", "/app/checkpoints/crawler.health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
-    
-    # Rede (opcional - para isolamento)
+      - ./data:/app/data:ro
+      - ./output:/app/output
+      - ./checkpoints:/app/checkpoints
+      - ./logs:/app/logs
+      - ./cookies:/app/cookies
+
     networks:
       - crawler-network
 
 networks:
   crawler-network:
     driver: bridge
-
-# Volumes nomeados (opcional)
-volumes:
-  urls-data:
-    driver: local
-  output-data:
-    driver: local
-  checkpoint-data:
-    driver: local

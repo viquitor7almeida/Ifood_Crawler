@@ -1,0 +1,6 @@
+com/ifood/crawler/unit/adapter/output/ResilientParserTest.class
+com/ifood/crawler/unit/core/service/TokenBucketRateLimiterTest.class
+com/ifood/crawler/unit/adapter/input/CsvUrlProviderTest.class
+com/ifood/crawler/integration/SqlitePersistenceIntegrationTest.class
+com/ifood/crawler/unit/core/model/ProductDataTest.class
+com/ifood/crawler/unit/core/service/RetryPolicyTest.class

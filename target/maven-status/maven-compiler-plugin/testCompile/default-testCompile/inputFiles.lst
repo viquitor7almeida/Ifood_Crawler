@@ -1,0 +1,6 @@
+/home/alrem/desktop/dev/ifood-crawler/src/test/java/com/ifood/crawler/unit/core/model/ProductDataTest.java
+/home/alrem/desktop/dev/ifood-crawler/src/test/java/com/ifood/crawler/unit/core/service/TokenBucketRateLimiterTest.java
+/home/alrem/desktop/dev/ifood-crawler/src/test/java/com/ifood/crawler/unit/adapter/output/ResilientParserTest.java
+/home/alrem/desktop/dev/ifood-crawler/src/test/java/com/ifood/crawler/unit/adapter/input/CsvUrlProviderTest.java
+/home/alrem/desktop/dev/ifood-crawler/src/test/java/com/ifood/crawler/integration/CrawlerOrchestratorIntegrationTest.java
+/home/alrem/desktop/dev/ifood-crawler/src/test/java/com/ifood/crawler/unit/core/service/RetryPolicyTest.java

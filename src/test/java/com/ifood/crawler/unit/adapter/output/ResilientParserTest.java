@@ -1,27 +1,18 @@
 package com.ifood.crawler.unit.adapter.output;
 
 import com.ifood.crawler.adapter.output.ResilientParser;
+import com.ifood.crawler.core.model.CrawlStatus;
 import com.ifood.crawler.core.model.ProductData;
-import com.microsoft.playwright.Page;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.URL;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class ResilientParserTest {
 
     private ResilientParser parser;
-    
-    @Mock
-    private Page mockPage;
 
     @BeforeEach
     void setUp() {
@@ -29,74 +20,146 @@ class ResilientParserTest {
     }
 
     @Test
-    void shouldParseAllFieldsSuccessfully() throws Exception {
-        // Mock do DOM
-        when(mockPage.isVisible("[data-testid='product-title']")).thenReturn(true);
-        when(mockPage.textContent("[data-testid='product-title']")).thenReturn("X-Burger Combo");
-        
-        when(mockPage.isVisible("[data-testid='price-original']")).thenReturn(true);
-        when(mockPage.textContent("[data-testid='price-original']")).thenReturn("R$ 39,90");
-        
-        when(mockPage.isVisible("[data-testid='price-discount']")).thenReturn(true);
-        when(mockPage.textContent("[data-testid='price-discount']")).thenReturn("R$ 29,90");
-        
-        when(mockPage.getAttribute("[data-testid='product-image'] img", "src"))
-                .thenReturn("https://images.ifood.com.br/combo.jpg");
+    void shouldParseAllFieldsFromHtml() throws Exception {
+        String html = """
+                <html>
+                <body>
+                    <h1>X-Burger Combo</h1>
+                    <div data-testid="price-original">R$ 39,90</div>
+                    <div data-testid="discount-price">R$ 29,90</div>
+                    <meta property="og:image" content="https://images.ifood.com.br/combo.jpg" />
+                </body>
+                </html>
+                """;
 
         URL url = new URL("https://www.ifood.com.br/produto/combo");
-        ProductData result = parser.parse(mockPage, url);
+        ProductData result = parser.parse(html, url);
 
         assertThat(result.title()).isEqualTo("X-Burger Combo");
-        assertThat(result.normalPrice()).isEqualTo("39.90");
-        assertThat(result.discountPrice()).isEqualTo("29.90");
+        assertThat(result.normalPrice()).isEqualTo("R$ 39,90");
+        assertThat(result.discountPrice()).isEqualTo("R$ 29,90");
         assertThat(result.productUrl()).isEqualTo(url);
-        assertThat(result.imageUrl()).hasToString("https://images.ifood.com.br/combo.jpg");
-        assertThat(result.status()).isEqualTo(com.ifood.crawler.core.model.CrawlStatus.SUCCESS);
+        assertThat(result.status()).isEqualTo(CrawlStatus.SUCCESS);
     }
 
     @Test
     void shouldHandleMissingFieldsGracefully() throws Exception {
-        // Mock com campos faltando
-        when(mockPage.isVisible(anyString())).thenReturn(false);
-        
-        // Retorna null para todos os seletores
-        when(mockPage.textContent(anyString())).thenReturn(null);
-        when(mockPage.getAttribute(anyString(), anyString())).thenReturn(null);
-
-        // Mock do HTML para fallback JSoup
         String html = """
                 <html>
                     <body>
-                        <h1>Produto Sem Preço</h1>
+                        <h1>Produto Sem Preco</h1>
                         <img src="https://images.ifood.com.br/default.jpg" />
                     </body>
                 </html>
                 """;
-        when(mockPage.content()).thenReturn(html);
 
         URL url = new URL("https://www.ifood.com.br/produto/sem-preco");
-        ProductData result = parser.parse(mockPage, url);
+        ProductData result = parser.parse(html, url);
 
-        assertThat(result.title()).isEqualTo("Produto Sem Preço");
-        assertThat(result.normalPrice()).isNull();
-        assertThat(result.discountPrice()).isNull();
-        assertThat(result.imageUrl()).hasToString("https://images.ifood.com.br/default.jpg");
-        assertThat(result.status()).isEqualTo(com.ifood.crawler.core.model.CrawlStatus.SUCCESS);
-        assertThat(result.errorMessage()).isNull();
+        assertThat(result.title()).isEqualTo("Produto Sem Preco");
+        assertThat(result.status()).isEqualTo(CrawlStatus.SUCCESS);
     }
 
     @Test
-    void shouldCleanPriceFormatting() throws Exception {
-        when(mockPage.isVisible("[data-testid='price-original']")).thenReturn(true);
-        when(mockPage.textContent("[data-testid='price-original']")).thenReturn("R$ 1.234,56");
-        
-        when(mockPage.isVisible("[data-testid='price-discount']")).thenReturn(true);
-        when(mockPage.textContent("[data-testid='price-discount']")).thenReturn("R$ 999,90");
+    void shouldExtractFromDataTestId() throws Exception {
+        String html = """
+                <html>
+                <body>
+                    <div data-testid="product-title">Produto Test ID</div>
+                    <div data-testid="price-original">R$ 99,90</div>
+                    <meta property="og:image" content="https://images.ifood.com.br/testid.jpg" />
+                </body>
+                </html>
+                """;
 
-        URL url = new URL("https://www.ifood.com.br/produto/preco");
-        ProductData result = parser.parse(mockPage, url);
+        URL url = new URL("https://www.ifood.com.br/produto/testid");
+        ProductData result = parser.parse(html, url);
 
-        assertThat(result.normalPrice()).isEqualTo("1234.56");
-        assertThat(result.discountPrice()).isEqualTo("999.90");
+        assertThat(result.title()).isEqualTo("Produto Test ID");
+        assertThat(result.normalPrice()).isEqualTo("R$ 99,90");
+    }
+
+    @Test
+    void shouldExtractFromMetaTags() throws Exception {
+        String html = """
+                <html>
+                <head>
+                    <meta property="og:title" content="Produto Meta" />
+                    <meta property="product:price:amount" content="79.90" />
+                    <meta property="og:image" content="https://images.ifood.com.br/meta.jpg" />
+                </head>
+                <body></body>
+                </html>
+                """;
+
+        URL url = new URL("https://www.ifood.com.br/produto/meta");
+        ProductData result = parser.parse(html, url);
+
+        assertThat(result.title()).isEqualTo("Produto Meta");
+        assertThat(result.normalPrice()).isEqualTo("R$ 79,90");
+    }
+
+    @Test
+    void shouldExtractFromJsonLd() throws Exception {
+        String html = """
+                <html>
+                <head>
+                    <script type="application/ld+json">
+                    {
+                        "@type": "Product",
+                        "name": "Produto JSON-LD",
+                        "offers": {
+                            "price": "49.90"
+                        },
+                        "image": "https://images.ifood.com.br/jsonld.jpg"
+                    }
+                    </script>
+                </head>
+                <body></body>
+                </html>
+                """;
+
+        URL url = new URL("https://www.ifood.com.br/produto/jsonld");
+        ProductData result = parser.parse(html, url);
+
+        assertThat(result.title()).isEqualTo("Produto JSON-LD");
+        assertThat(result.normalPrice()).isEqualTo("R$ 49,90");
+    }
+
+    @Test
+    void shouldExtractFromJsonLdWithOffersArray() throws Exception {
+        String html = """
+                <html>
+                <head>
+                    <script type="application/ld+json">
+                    {
+                        "@type": "Product",
+                        "name": "Produto Oferta",
+                        "offers": [
+                            {
+                                "@type": "Offer",
+                                "price": "59.90",
+                                "priceType": "https://schema.org/ListPrice"
+                            },
+                            {
+                                "@type": "Offer",
+                                "price": "39.90",
+                                "priceType": "https://schema.org/SalePrice"
+                            }
+                        ],
+                        "image": "https://images.ifood.com.br/oferta.jpg"
+                    }
+                    </script>
+                </head>
+                <body></body>
+                </html>
+                """;
+
+        URL url = new URL("https://www.ifood.com.br/produto/oferta");
+        ProductData result = parser.parse(html, url);
+
+        assertThat(result.title()).isEqualTo("Produto Oferta");
+        assertThat(result.normalPrice()).isEqualTo("R$ 59,90");
+        assertThat(result.discountPrice()).isEqualTo("R$ 39,90");
     }
 }

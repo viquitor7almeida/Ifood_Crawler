@@ -1,0 +1,11 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "ifood",
+            "database": "${workspaceFolder:ifood-crawler}/checkpoint.db"
+        }
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
+}
